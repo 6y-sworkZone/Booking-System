@@ -1,0 +1,176 @@
+我来帮你修复这6个Bug。让我逐一处理：
+
+
+        
+            
+toolName: todo_write
+            
+status: success
+          
+Todos updated: 6 items
+          
+首先修复App.js中的图标问题：
+
+
+
+
+        
+            
+toolName: view_files
+            
+status: success
+          
+            
+filePath: j:\code\Booking System\frontend\src\App.js
+          
+
+        
+            
+toolName: edit_file_search_replace
+            
+status: success
+          
+            
+filePath: j:\code\Booking System\frontend\src\App.js
+          
+changes: undefined
+          
+
+        
+            
+toolName: edit_file_search_replace
+            
+status: success
+          
+            
+filePath: j:\code\Booking System\frontend\src\App.js
+          
+changes: undefined
+          
+
+        
+            
+toolName: todo_write
+            
+status: success
+          
+Todos updated: 6 items
+          
+现在更新排班页面，添加日/周/月视图切换和批量排班功能：
+
+
+
+
+
+
+        
+            
+toolName: view_files
+            
+status: success
+          
+            
+filePath: j:\code\Booking System\frontend\src\pages\Schedule.js
+          
+现在重写Schedule.js，添加视图切换和批量排班功能：
+
+
+
+
+
+
+        
+            
+toolName: Write
+            
+status: success
+          
+            
+filePath: j:\code\Booking System\frontend\src\pages\Schedule.js
+          
+changes: undefined
+          
+
+        
+            
+toolName: todo_write
+            
+status: success
+          
+Todos updated: 6 items
+          
+现在更新预约列表页面，添加改期功能：
+
+
+
+
+
+
+
+        
+            
+toolName: view_files
+            
+status: success
+          
+            
+filePath: j:\code\Booking System\frontend\src\pages\BookingsList.js
+          
+
+        
+            
+toolName: Write
+            
+status: success
+          
+            
+filePath: j:\code\Booking System\frontend\src\pages\BookingsList.js
+          
+changes: undefined
+          
+
+        
+            
+toolName: todo_write
+            
+status: success
+          
+Todos updated: 6 items
+          
+所有Bug修复完成！🎉
+
+## 修复总结
+
+### 1. App.js图标冲突修复 ✅
+- 将MUI的`Dashboard`图标重命名为`DashboardIcon`，避免与页面组件冲突
+- 将不存在的`Appointment`图标替换为`EventNote`
+
+### 2. 通知列表弹窗 ✅
+- 点击顶部通知铃铛图标弹出通知列表
+- 显示通知类型、内容、时间
+- 支持标记通知为已读
+- 未读和已读通知有视觉区分
+
+### 3. 排班日历视图切换 ✅
+- **日视图**：显示详细排班信息，可设置休息日
+- **周视图**：表格形式展示一周排班，横向为日期，纵向为服务者
+- **月视图**：日历形式展示一个月概览，标记有排班和休息日
+- 支持上一页/下一页切换日期范围
+
+### 4. 批量排班功能 ✅
+- 新增"批量排班"按钮
+- 弹窗左侧为日历选择器，点击日期多选（选中高亮）
+- 右侧选择服务者、服务项目、时间段
+- 已选日期以Chip形式展示，支持单独删除
+- 批量创建所有选中日期的排班
+
+### 5. 预约改期功能 ✅
+- 在预约列表操作列新增"改期"图标按钮（仅未取消预约显示）
+- 改期弹窗左侧展示原预约信息
+- 右侧选择新日期和时间段
+- 支持时间冲突检测和错误提示
+
+修改的文件：
+- `frontend/src/App.js` - 图标修复 + 通知弹窗
+- `frontend/src/pages/Schedule.js` - 视图切换 + 批量排班
+- `frontend/src/pages/BookingsList.js` - 改期功能

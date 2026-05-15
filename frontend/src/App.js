@@ -13,17 +13,25 @@ import {
   CssBaseline,
   Badge,
   IconButton,
+  Popover,
+  List as MUIList,
+  ListItem as MUIListItem,
+  ListItemText as MUIListItemText,
+  Divider,
+  Chip,
 } from '@mui/material';
 import {
-  Dashboard,
+  Dashboard as DashboardIcon,
   RoomService,
   People,
   CalendarToday,
-  Appointment,
+  EventNote,
   Notifications,
   BarChart,
+  CheckCircle,
 } from '@mui/icons-material';
 import axios from 'axios';
+import dayjs from 'dayjs';
 
 import Dashboard from './pages/Dashboard';
 import Services from './pages/Services';
@@ -37,6 +45,8 @@ const drawerWidth = 240;
 
 function App() {
   const [notificationCount, setNotificationCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
+  const [notificationAnchor, setNotificationAnchor] = useState(null);
 
   useEffect(() => {
     fetchNotifications();
@@ -45,6 +55,7 @@ function App() {
   const fetchNotifications = async () => {
     try {
       const response = await axios.get('/api/notifications');
+      setNotifications(response.data.data);
       const unread = response.data.data.filter(n => !n.is_read).length;
       setNotificationCount(unread);
     } catch (error) {
@@ -52,15 +63,34 @@ function App() {
     }
   };
 
+  const handleNotificationClick = (event) => {
+    setNotificationAnchor(event.currentTarget);
+  };
+
+  const handleNotificationClose = () => {
+    setNotificationAnchor(null);
+  };
+
+  const handleMarkAsRead = async (id) => {
+    try {
+      await axios.put(`/api/notifications/${id}/read`);
+      fetchNotifications();
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
+  };
+
   const menuItems = [
-    { text: '仪表盘', icon: <Dashboard />, path: '/' },
+    { text: '仪表盘', icon: <DashboardIcon />, path: '/' },
     { text: '服务管理', icon: <RoomService />, path: '/services' },
     { text: '服务者管理', icon: <People />, path: '/providers' },
     { text: '排班日历', icon: <CalendarToday />, path: '/schedule' },
-    { text: '预约服务', icon: <Appointment />, path: '/booking' },
-    { text: '预约列表', icon: <Appointment />, path: '/bookings' },
+    { text: '预约服务', icon: <EventNote />, path: '/booking' },
+    { text: '预约列表', icon: <EventNote />, path: '/bookings' },
     { text: '统计报表', icon: <BarChart />, path: '/stats' },
   ];
+
+  const notificationOpen = Boolean(notificationAnchor);
 
   return (
     <BrowserRouter>
@@ -74,11 +104,90 @@ function App() {
             <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
               预约排班系统
             </Typography>
-            <IconButton color="inherit">
+            <IconButton color="inherit" onClick={handleNotificationClick}>
               <Badge badgeContent={notificationCount} color="error">
                 <Notifications />
               </Badge>
             </IconButton>
+            <Popover
+              open={notificationOpen}
+              anchorEl={notificationAnchor}
+              onClose={handleNotificationClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              PaperProps={{
+                sx: { width: 400, maxHeight: 500 },
+              }}
+            >
+              <Box sx={{ p: 2, backgroundColor: '#f5f5f5' }}>
+                <Typography variant="h6">通知列表</Typography>
+              </Box>
+              <Divider />
+              {notifications.length === 0 ? (
+                <Box sx={{ p: 3, textAlign: 'center' }}>
+                  <Typography variant="body1" color="textSecondary">
+                    暂无通知
+                  </Typography>
+                </Box>
+              ) : (
+                <MUIList sx={{ p: 0 }}>
+                  {notifications.map((notification) => (
+                    <React.Fragment key={notification.id}>
+                      <MUIListItem
+                        sx={{
+                          backgroundColor: notification.is_read ? 'transparent' : '#e3f2fd',
+                          '&:hover': { backgroundColor: '#f5f5f5' },
+                        }}
+                        secondaryAction={
+                          !notification.is_read && (
+                            <IconButton
+                              edge="end"
+                              size="small"
+                              onClick={() => handleMarkAsRead(notification.id)}
+                            >
+                              <CheckCircle fontSize="small" color="primary" />
+                            </IconButton>
+                          )
+                        }
+                      >
+                        <Box sx={{ flex: 1 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                            <MUIListItemText
+                              primary={
+                                <Typography variant="subtitle2" sx={{ fontWeight: notification.is_read ? 'normal' : 'bold' }}>
+                                  {notification.type === 1 ? '新预约' :
+                                   notification.type === 2 ? '预约取消' :
+                                   notification.type === 3 ? '预约改期' :
+                                   notification.type === 4 ? '预约提醒' : '通知'}
+                                </Typography>
+                              }
+                              secondary={
+                                <Typography variant="caption" color="textSecondary">
+                                  {dayjs(notification.created_at).format('YYYY-MM-DD HH:mm')}
+                                </Typography>
+                              }
+                            />
+                            {!notification.is_read && (
+                              <Chip label="未读" size="small" color="primary" variant="outlined" sx={{ ml: 1 }} />
+                            )}
+                          </Box>
+                          <Typography variant="body2" color="textSecondary">
+                            {notification.content}
+                          </Typography>
+                        </Box>
+                      </MUIListItem>
+                      <Divider component="li" />
+                    </React.Fragment>
+                  ))}
+                </MUIList>
+              )}
+            </Popover>
           </Toolbar>
         </AppBar>
         <Drawer
